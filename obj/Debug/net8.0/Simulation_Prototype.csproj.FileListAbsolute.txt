@@ -1,0 +1,14 @@
+C:\Users\jakat\source\repos\Simulation_Prototype\Simulation_Prototype\obj\Debug\net8.0\Simulation_Prototype.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\jakat\source\repos\Simulation_Prototype\Simulation_Prototype\obj\Debug\net8.0\Simulation_Prototype.AssemblyInfoInputs.cache
+C:\Users\jakat\source\repos\Simulation_Prototype\Simulation_Prototype\obj\Debug\net8.0\Simulation_Prototype.AssemblyInfo.cs
+C:\Users\jakat\source\repos\Simulation_Prototype\Simulation_Prototype\obj\Debug\net8.0\Simulation_Prototype.csproj.CoreCompileInputs.cache
+C:\Users\jakat\source\repos\Simulation_Prototype\Simulation_Prototype\bin\Debug\net8.0\Simulation_Prototype.exe
+C:\Users\jakat\source\repos\Simulation_Prototype\Simulation_Prototype\bin\Debug\net8.0\Simulation_Prototype.deps.json
+C:\Users\jakat\source\repos\Simulation_Prototype\Simulation_Prototype\bin\Debug\net8.0\Simulation_Prototype.runtimeconfig.json
+C:\Users\jakat\source\repos\Simulation_Prototype\Simulation_Prototype\bin\Debug\net8.0\Simulation_Prototype.dll
+C:\Users\jakat\source\repos\Simulation_Prototype\Simulation_Prototype\bin\Debug\net8.0\Simulation_Prototype.pdb
+C:\Users\jakat\source\repos\Simulation_Prototype\Simulation_Prototype\obj\Debug\net8.0\Simulation_Prototype.dll
+C:\Users\jakat\source\repos\Simulation_Prototype\Simulation_Prototype\obj\Debug\net8.0\refint\Simulation_Prototype.dll
+C:\Users\jakat\source\repos\Simulation_Prototype\Simulation_Prototype\obj\Debug\net8.0\Simulation_Prototype.pdb
+C:\Users\jakat\source\repos\Simulation_Prototype\Simulation_Prototype\obj\Debug\net8.0\Simulation_Prototype.genruntimeconfig.cache
+C:\Users\jakat\source\repos\Simulation_Prototype\Simulation_Prototype\obj\Debug\net8.0\ref\Simulation_Prototype.dll
