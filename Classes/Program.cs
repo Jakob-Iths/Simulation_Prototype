@@ -21,6 +21,8 @@ public class Program
 
 		for (int i = 0; i < 10000; i++)
 		{
+			Console.WriteLine(i + "   " + CollectionData.ActiveCreatures.Count() + "   " + CollectionData.Foods1.Count);
+
 			CollectionData.numberOfPredators1 = 0;
 			foreach (var creatures in CollectionData.ActiveCreatures)
 			{
@@ -35,6 +37,8 @@ public class Program
 				CollectionData.ChangeId();
 				CollectionData.isPredator = false;
 			}
+
+			CollectionData.SortList(i);
 
 			CollectionData.Forage();
 
@@ -70,8 +74,8 @@ public class Program
 			CollectionData.test2 = 0;
 			*/
 
-			Console.WriteLine(i + "   " + CollectionData.ActiveCreatures.Count());
-			CollectionData.Creatures.Clear();
+			//Console.WriteLine(i + "   " + CollectionData.ActiveCreatures.Count() + "   " + CollectionData.Foods1.Count);
+			//CollectionData.Creatures.Clear();
 		}
 
 
@@ -88,7 +92,7 @@ public class Program
 		{
 			totalStats = 0;
 			totalStats = creature.Speed + creature.Energy + creature.Sense + creature.Power + creature.Stealth + creature.PoisonRes;
-			Console.WriteLine(creature.Id + " Speed:" + creature.Speed + " Energy:" + creature.Energy + " Sense:" + creature.Sense + " power:" + creature.Power + " P:" + creature.Predator + " Stealth:" + creature.Stealth + " PoisonRes:" + creature.PoisonRes + " PoisonStr:" + creature.PoisonStr + " Poison:" + creature.Poison + " Type:" + creature.FoodType + " Zone:" + creature.Zone + " Total:" + totalStats);
+			Console.WriteLine(creature.Id + " Speed:" + creature.Speed + " Energy:" + creature.Energy + " Sense:" + creature.Sense + " power:" + creature.Power + " P:" + creature.Predator + " Stealth:" + creature.Stealth + " PoisonRes:" + creature.PoisonRes + " PoisonStr:" + creature.PoisonStr + " Poison:" + creature.Poison + " Zone:" + creature.Zone + " Type:" + creature.FoodType + " Total:" + totalStats);
 			Console.WriteLine("");
 		}
 
@@ -129,6 +133,10 @@ public class Program
 		Console.WriteLine("antalet barn:" + ((CollectionData.averageLiving / CollectionData.ActiveCreatures.Count()) + (CollectionData.averageDead / CollectionData.Creatures.Count())) / 2 + " Medel Livslängd:" + CollectionData.averageAge / (CollectionData.ActiveCreatures.Count() + CollectionData.Creatures.Count()));
 		Console.WriteLine("antalet predators:"+ CollectionData.numberOfPredators1);
 		Console.WriteLine(CollectionData.Foods1.Count());
-		
+		CollectionData.Foods1 = CollectionData.Foods1.OrderByDescending(Food => Food.Id).ToList();
+		CollectionData.Foods1 = CollectionData.Foods1.OrderByDescending(Food => Food.FoodType).ToList();
+		foreach (var food in CollectionData.Foods1)
+			Console.WriteLine(food.Id + "   " + food.FoodType);
+
 	}
 }

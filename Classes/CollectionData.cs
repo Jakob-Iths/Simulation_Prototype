@@ -34,6 +34,7 @@ public class CollectionData
 	public double dividedBy3 = 0.2;
 	public double dividedBy4 = 0.6;
 	public double dividedBy5 = 0.1;
+
 	public int type1 = 0;
 	public int type2 = 0;
 	public int type3 = 0;
@@ -95,12 +96,11 @@ public class CollectionData
 			ActiveCreatures.Add(creature);
 		}
 	}
-	
+
 	public void GenerateFood()
 	{
 		// Zone 1
 		numberOfFoodType1 = Convert.ToInt32(maxTilesZone1 * dividedBy1);
-
 		for (var i = 0; i < numberOfFoodType1; i++)
 		{
 			Food food = new Food(maxTilesZone1 - i, 1, false, false, 0, 1, 0);
@@ -110,7 +110,7 @@ public class CollectionData
 
 		for (var i = 0; i < numberOfFoodType2; i++)
 		{
-			Food food = new Food(maxTilesZone1 - i, 2, true, false, 0, 1, 8);
+			Food food = new Food(maxTilesZone1 - i, 2, false, false, 0, 1, 8);
 			Foods1.Add(food);
 		}
 
@@ -142,241 +142,149 @@ public class CollectionData
 
 
 	}
+
+	public void SortList(int i)
+	{
+		if (i % 50 == 1)
+		{
+			ActiveCreatures = ActiveCreatures.OrderByDescending(creature => creature.Speed).ToList();
+		}
+		else
+		{
+			ActiveCreatures = ActiveCreatures.OrderBy(_ => rnd.Next()).ToList();
+		}
+	}
 	public void Forage()
 	{
 		Foods1 = Foods1.OrderByDescending(Food => Food.Id).ToList();
 		previousForage = 999;
-		//ActiveCreatures = ActiveCreatures.OrderByDescending(creature => creature.Speed).ToList();
-		ActiveCreatures = ActiveCreatures.OrderBy(_ => rnd.Next()).ToList();
 		foreach (var creature in ActiveCreatures)
 		{
+
 			predatorsZone1 = 0;
 			predatorsZone2 = 0;
 			if (creature.Zone == 1)
-			{
-				bool isPrey = false;
-				bool hasEaten = false;
-				for (int i = 0; i < creature.Energy / 2; i++)
-				{
-					creature.Forage = rnd.Next(maxTilesZone1) + creature.Sense;
+				ZoneForage(creature, maxTilesZone1, predatorsZone1, 1);
 
-					if (creature.Forage < previousForage && creature.Predator == true)
-					{
-						continue;
-					}
-
-					if (previousPower <= creature.Power && creature.Predator == true && creature.Sense >= previousStealth && creature.MeatEaten == 0 && creature.Zone == previousZone)
-					{
-						if (previousPoison == true && rnd.Next(previousPoisonStr + creature.PoisonRes) <= previousPoisonStr)
-						{
-							i -= 1;
-							continue;
-						}
-						foreach (var preyOrPredator in ActiveCreatures)
-						{
-						
-							if (preyOrPredator.Predator && preyOrPredator.Zone == 1)
-								predatorsZone1++;
-
-							if (previousCreature == preyOrPredator.SecondaryId)
-							{
-								creature.MeatEaten = 1;
-								DyingCreatures.Add(preyOrPredator);
-								Creatures.Add(preyOrPredator);
-								hasEaten = true;
-								if (preyOrPredator.Predator == false)
-									isPrey = true;
-							}
-						}
-						break;
-					}
-					else if (creature.MeatEaten == 1 && creature.Predator == true)
-					{
-						creature.Children += 1;
-						creatureIdDecider++;
-						NewCreature(creature);
-						creature.MeatEaten = 0;
-						if (predatorsZone1 < (ActiveCreatures.Count() + 1) / 4)
-						{
-							creature.Children += 1;
-							creatureIdDecider++;
-							NewCreature(creature);
-						}
-						hasEaten = true;
-						break;
-					}
-					foreach (var food in Foods1)
-					{
-						if (creature.Predator == true)
-							break;
-						if (creature.FoodType == food.FoodType && creature.Zone == food.Zone)
-						{
-							if (creature.Forage >= food.Id)
-							{
-								if (food.Camouflage == true)
-									if (food.Hidden >= creature.Sense)
-										creature.FoodEaten--;
-
-								if (food.Poison == true && rnd.Next(food.PoisonStr + creature.PoisonRes) <= food.PoisonStr)
-								{
-									i -= 2;
-									break;
-								}
-
-								EatenFood.Add(food);
-								hasEaten = true;
-								creature.FoodEaten++;
-								if (creature.FoodEaten == creature.Hunger)
-								{
-									creature.FoodEaten = 0;
-									creature.Children++;
-									creatureIdDecider++;
-									NewCreature(creature);
-								}
-								break;
-							}
-							
-						}
-					}
-					foreach (var food in EatenFood)
-					{		
-						Foods1.Remove(food);
-						FoodHolder.Add(food);
-					}
-					EatenFood.Clear();
-
-				}
-				if (hasEaten == false)
-				{
-					DyingCreatures.Add(creature);
-					Creatures.Add(creature);
-				}
-
-				creature.Age++;
-				previousForage = creature.Forage;
-				previousType = creature.Predator;
-				previousStealth = creature.Stealth;
-				previousCreature = creature.SecondaryId;
-				previousPower = creature.Power;
-				previousSpeed = creature.Speed;
-				previousZone = creature.Zone;
-				previousPoison = creature.Poison;
-				previousPoisonStr = creature.PoisonStr;
-
-			}
 			else if (creature.Zone == 2)
-			{
-				bool isPrey = false;
-				bool hasEaten = false;
-				for (int i = 0; i < creature.Energy / 2; i++)
-				{
-					creature.Forage = rnd.Next(maxTilesZone2) + creature.Sense;
-
-					if (creature.Predator == true && (creature.Forage < previousForage))
-					{
-						continue;
-					}
-
-					if (previousPower <= creature.Power && creature.Predator == true && creature.Sense >= previousStealth && creature.MeatEaten == 0 && creature.Zone == previousZone)
-					{
-
-						if (previousPoison == true && rnd.Next(previousPoisonStr + creature.PoisonRes) <= previousPoisonStr)
-						{
-							i -= 1;
-							continue;
-						}
-						foreach (var preyOrPredator in ActiveCreatures)
-						{
-							if (preyOrPredator.Predator && preyOrPredator.Zone == 2)
-								predatorsZone2++;
-
-							if (previousCreature == preyOrPredator.SecondaryId)
-							{
-								creature.MeatEaten = 1;
-								DyingCreatures.Add(preyOrPredator);
-								Creatures.Add(preyOrPredator);
-								hasEaten = true;
-								if (preyOrPredator.Predator == false)
-									isPrey = true;
-							}
-						}
-						break;
-					}
-					else if (creature.MeatEaten == 1 && creature.Predator == true)
-					{
-							creature.Children += 1;
-							creatureIdDecider++;
-							NewCreature(creature);
-							creature.MeatEaten = 0;
-							if (predatorsZone2 < (ActiveCreatures.Count() + 1 ) / 4)
-							{
-								creature.Children += 1;
-								creatureIdDecider++;
-								NewCreature(creature);
-							}
-						hasEaten = true;
-						break;
-					}
-					foreach (var food in Foods1)
-					{
-						if (creature.Predator == true)
-							break;
-						if (creature.FoodType == food.FoodType && creature.Zone == food.Zone)
-						{
-							if (creature.Forage >= food.Id)
-							{
-								if (food.Camouflage == true)
-									if (food.Hidden >= creature.Sense)
-										creature.FoodEaten--;
-
-								if (food.Poison == true && rnd.Next(food.PoisonStr + creature.PoisonRes) <= food.PoisonStr)
-								{
-									i -= 2;
-									break;
-								}
-
-								EatenFood.Add(food);
-								hasEaten = true;
-								creature.FoodEaten++;
-								if (creature.FoodEaten == creature.Hunger)
-								{
-									creature.FoodEaten = 0;
-									creature.Children++;
-									creatureIdDecider++;
-									NewCreature(creature);
-								}
-								break;
-							}
-
-						}
-					}
-					foreach (var food in EatenFood)
-					{
-						Foods1.Remove(food);
-						FoodHolder.Add(food);
-					}
-					EatenFood.Clear();
-				}
-				if (hasEaten == false)
-				{
-					DyingCreatures.Add(creature);
-					Creatures.Add(creature);
-				}
-
-				creature.Age++;
-				previousForage = creature.Forage;
-				previousType = creature.Predator;
-				previousStealth = creature.Stealth;
-				previousCreature = creature.SecondaryId;
-				previousPower = creature.Power;
-				previousSpeed = creature.Speed;
-				previousZone = creature.Zone;
-				previousPoison = creature.Poison;
-				previousPoisonStr = creature.PoisonStr;
-			}
+				ZoneForage(creature, maxTilesZone2, predatorsZone2, 2);
 		}
 	}
 
+	public void ZoneForage(Creature creature, int maxTiles, int predators, int zone)
+	{
+		bool isPrey = false;
+		bool hasEaten = false;
+		for (int i = 0; i < creature.Energy / 2; i++)
+		{
+			creature.Forage = rnd.Next(maxTiles) + creature.Sense;
+
+			if (creature.Forage < previousForage && creature.Predator == true)
+			{
+				continue;
+			}
+
+			if (previousPower < creature.Power && creature.Predator == true && creature.Sense > previousStealth && creature.MeatEaten == 0 && creature.Zone == previousZone)
+			{
+				if (previousPoison == true && rnd.Next(previousPoisonStr + creature.PoisonRes) >= previousPoisonStr)
+				{
+					i += 1;
+					continue;
+				}
+				foreach (var preyOrPredator in ActiveCreatures)
+				{
+
+					if (preyOrPredator.Predator && preyOrPredator.Zone == zone)
+						predators++;
+
+					if (previousCreature == preyOrPredator.SecondaryId)
+					{
+						creature.MeatEaten++;
+						DyingCreatures.Add(preyOrPredator);
+						Creatures.Add(preyOrPredator);
+						hasEaten = true;
+						if (preyOrPredator.Predator == false)
+							isPrey = true;
+						break;
+					}
+				}
+			}
+			else if (creature.MeatEaten == 1 && creature.Predator == true)
+			{
+				creature.MeatEaten++;
+				break;
+			}
+			else if (creature.MeatEaten == 2 && creature.Predator == true)
+			{
+				creature.Children += 1;
+				creatureIdDecider++;
+				NewCreature(creature);
+				if (predators < (ActiveCreatures.Count() + 1) / 3)
+				{
+					creature.Children += 1;
+					creatureIdDecider++;
+					NewCreature(creature);
+				}
+				creature.MeatEaten = 0;
+				hasEaten = true;
+				break;
+			}
+			foreach (var food in Foods1)
+			{
+				if (creature.Predator == true)
+					break;
+				if (creature.FoodType == food.FoodType && creature.Zone == food.Zone)
+				{
+					if (creature.Forage >= food.Id)
+					{
+						if (food.Camouflage == true)
+							if (food.Hidden >= creature.Sense)
+								creature.FoodEaten--;
+
+						if (food.Poison == true && rnd.Next(food.PoisonStr + creature.PoisonRes) >= food.PoisonStr)
+						{
+							i += 2;
+							continue;
+						}
+
+						EatenFood.Add(food);
+						hasEaten = true;
+						creature.FoodEaten++;
+						if (creature.FoodEaten == creature.Hunger)
+						{
+							creature.FoodEaten = 0;
+							creature.Children++;
+							creatureIdDecider++;
+							NewCreature(creature);
+						}
+						break;
+					}
+
+				}
+			}
+			foreach (var food in EatenFood)
+			{
+				Foods1.Remove(food);
+			}
+
+		}
+		if (hasEaten == false)
+		{
+			DyingCreatures.Add(creature);
+			Creatures.Add(creature);
+		}
+
+		creature.Age++;
+		previousForage = creature.Forage;
+		previousType = creature.Predator;
+		previousStealth = creature.Stealth;
+		previousCreature = creature.SecondaryId;
+		previousPower = creature.Power;
+		previousSpeed = creature.Speed;
+		previousZone = creature.Zone;
+		previousPoison = creature.Poison;
+		previousPoisonStr = creature.PoisonStr;
+	}
 	public void NewCreature(Creature oldCreature)
 	{
 		maxStats = (maxStat / 2) * numberOfStats; 
@@ -422,13 +330,13 @@ public class CollectionData
 						Creature creature = new Creature(oldCreature.Id + "," + oldCreature.Children + "(M3M)", oldCreature.Speed, oldCreature.Energy, oldCreature.Sense, 0, foodtype, 0, oldCreature.Hunger, 0, 0, oldCreature.Power, oldCreature.Predator, oldCreature.Stealth, 0, oldCreature.Zone, oldCreature.Poison, oldCreature.PoisonStr, oldCreature.PoisonRes, false, oldCreature.AncestorFoodType, creatureIdDecider, false);
 						AddToList(creature);
 					}
-					else if (foodtype == 14)
+					else if (foodtype == 4)
 					{
 						// FoodType 4
 						Creature creature = new Creature(oldCreature.Id + "," + oldCreature.Children + "(M4M)", oldCreature.Speed, oldCreature.Energy, oldCreature.Sense, 0, foodtype, 0, oldCreature.Hunger, 0, 0, oldCreature.Power, oldCreature.Predator, oldCreature.Stealth, 0, oldCreature.Zone, oldCreature.Poison, oldCreature.PoisonStr, oldCreature.PoisonRes, false, oldCreature.AncestorFoodType, creatureIdDecider, false);
 						AddToList(creature);
 					}
-					else if (foodtype == 15)
+					else if (foodtype == 5)
 					{
 						// FoodType 5
 						Creature creature = new Creature(oldCreature.Id + "," + oldCreature.Children + "(M5M)", oldCreature.Speed, oldCreature.Energy, oldCreature.Sense, 0, foodtype, 0, oldCreature.Hunger, 0, 0, oldCreature.Power, oldCreature.Predator, oldCreature.Stealth, 0, oldCreature.Zone, oldCreature.Poison, oldCreature.PoisonStr, oldCreature.PoisonRes, false, oldCreature.AncestorFoodType, creatureIdDecider, false);
@@ -484,7 +392,7 @@ public class CollectionData
 
 					standardFoodZone1 = 1;
 				}
-				/*else 
+				else 
 				{
 					// Zone 2
 					if (oldCreature.Zone == 2)
@@ -497,7 +405,7 @@ public class CollectionData
 
 					standardFoodZone2 = 3;
 
-				}*/
+				}
 			}
 			else if (wichtype == 5)
 			{
@@ -606,6 +514,12 @@ public class CollectionData
 		{
 			int totalStats = oldCreature.Speed + oldCreature.Energy + oldCreature.Sense + oldCreature.Power + oldCreature.Stealth + oldCreature.PoisonRes;
 			int statchange = rnd.Next(3);
+
+			if (oldStat < 1)
+				return +1;
+			else if (statchange == 1 && oldStat == 1)
+				return 0;
+
 			if (cap == false)
 			{
 				if (statchange == 1)
@@ -619,7 +533,7 @@ public class CollectionData
 			}
 			else if (typeStat == true)
 			{
-				if (statchange == 1 && oldStat > 0)
+				if (statchange == 1 && oldStat > 2)
 					return -1;
 				else if (statchange == 2 && oldStat < maxStat / 2)
 					return 1;
@@ -635,13 +549,12 @@ public class CollectionData
 				{
 					return -1;
 				}
-				else if (statchange == 1 && oldStat == 1)
+				else if (statchange == 1 && oldStat < 2)
 				{
 					return 0;
 				}
 				else if (oldStat < 18 && oldStat > 3 && totalStats < maxStats - 2 && rnd.Next(101) == 1)
 				{
-					Console.WriteLine("BINGO!!!");
 
 					if (statchange == 1)
 					{
@@ -660,7 +573,10 @@ public class CollectionData
 				{
 					return -1;
 				}
-				else { return 0; }
+				else 
+				{ 
+					return 0; 
+				}
 			}
 			
 		}
@@ -676,13 +592,13 @@ public class CollectionData
         {
             ActiveCreatures.Add(creature);
         }
-        foreach (var food in FoodHolder)
+        foreach (var food in EatenFood)
         {
             Foods1.Add(food);
         }
-		FoodHolder.Clear();
 		DyingCreatures.Clear();
 		Waitingcreatures.Clear();
+		EatenFood.Clear();
 	}
 
 	public void ChangeInEnviroment()
